@@ -1,0 +1,16 @@
+# .NET build output
+bin/
+obj/
+
+# IDE files
+.vs/
+*.user
+*.suo
+
+# Test and publish output
+TestResults/
+publish/
+
+# OS-generated files
+.DS_Store
+Thumbs.db
