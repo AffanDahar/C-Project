@@ -3,6 +3,8 @@ using System.Data;
 using Dapper;
 using Microsoft.Data.SqlClient;
 using HelloWorld.Models;
+using HelloWorld.Data;
+using Microsoft.Extensions.Configuration;
 namespace HelloWorld
 
 {
@@ -12,13 +14,15 @@ namespace HelloWorld
         static void Main(string[] args)
         {
 
-            string connectionString = "Server=localhost,1433;Database=DotnetCourseDatabas;User Id=sa;Password=Perfume_Dev_Pass1;Encrypt=true;TrustServerCertificate=true";
-            IDbConnection databaseConnection = new SqlConnection(connectionString);
-string sqlCommand = "SELECT GETDATE()";
-DateTime currentDate = databaseConnection.QuerySingle<DateTime>(sqlCommand);
-Console.WriteLine(currentDate);
+            IConfiguration config = new ConfigurationBuilder()
+                .AddJsonFile("appsettings.json")
+                .Build();
+
+            DataContextDapper dapper = new(config);
+
+            
              
-            Computer myComputer = new Computer()
+            Computer myComputer = new()
             {
                 Motherboard = "ASUS ROG Strix Z790-E",
                 CPUCores = 16,
@@ -42,8 +46,9 @@ Console.WriteLine(currentDate);
             + ", " + (myComputer.HasWifi ? 1 : 0) 
             + ", " + (myComputer.HasLTE ? 1 : 0)
             + ", '" + myComputer.ReleaseDate.ToString("yyyy-MM-dd")
-            + "', " + myComputer.Price.ToString(System.Globalization.CultureInfo.InvariantCulture) + ", '" + myComputer.VideoCard + "')";
-            int result = databaseConnection.Execute(sql);
+            + "', " + myComputer.Price.ToString(System.Globalization.CultureInfo.InvariantCulture) 
+            + ", '" + myComputer.VideoCard + "')";
+            int result = dapper.ExecuteQueryRow(sql);
 
             // Console.WriteLine($"Inserted {result} row(s) into the database.");
 
@@ -57,7 +62,7 @@ Console.WriteLine(currentDate);
              VideoCard FROM ToturialAppSchema.Computer
              WHERE VideoCard LIKE '%NVIDIA%'AND CPUCores > 12 AND Price > 2500
              ";
-            IEnumerable<Computer> computers = databaseConnection.Query<Computer>(sqlSelect);
+            IEnumerable<Computer> computers = dapper.GetData<Computer>(sqlSelect);
             foreach(Computer singleComputer in computers)
             {
                 Console.WriteLine($"Motherboard: {singleComputer.Motherboard}, CPU Cores: {singleComputer.CPUCores}, Has Wifi: {singleComputer.HasWifi}, Has LTE: {singleComputer.HasLTE}, Release Date: {singleComputer.ReleaseDate}, Price: {singleComputer.Price}, Video Card: {singleComputer.VideoCard}");
