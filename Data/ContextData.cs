@@ -27,10 +27,10 @@ namespace HelloWorld.Data
             return databaseConnection.QuerySingle<T>(sqlQuery);
             
         }
-        public int ExecuteQueryRow(string sqlQuery)
+        public int ExecuteQueryRow(string sqlQuery, object parameters = null)
         {
             IDbConnection databaseConnection = new SqlConnection(_connectionString);
-            return databaseConnection.Execute(sqlQuery);
+            return databaseConnection.Execute(sqlQuery, parameters);
         }
         public bool ExecuteQuery(string sqlQuery)
         {

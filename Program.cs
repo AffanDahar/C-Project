@@ -5,6 +5,8 @@ using Microsoft.Data.SqlClient;
 using HelloWorld.Models;
 using HelloWorld.Data;
 using Microsoft.Extensions.Configuration;
+using System.Text.Json;
+using Newtonsoft.Json;
 namespace HelloWorld
 
 {
@@ -33,40 +35,40 @@ namespace HelloWorld
                 VideoCard = "NVIDIA GeForce RTX 4090"
             };
 
-            string sql = @"INSERT INTO ToturialAppSchema.Computer (
-            Motherboard,
-             CPUCores, 
-             HasWifi, 
-             HasLTE, 
-             ReleaseDate, 
-             Price, 
-             VideoCard
-             ) VALUES ('" + myComputer.Motherboard 
-            + "', " + myComputer.CPUCores 
-            + ", " + (myComputer.HasWifi ? 1 : 0) 
-            + ", " + (myComputer.HasLTE ? 1 : 0)
-            + ", '" + myComputer.ReleaseDate.ToString("yyyy-MM-dd")
-            + "', " + myComputer.Price.ToString(System.Globalization.CultureInfo.InvariantCulture) 
-            + ", '" + myComputer.VideoCard + "')";
-            int result = dapper.ExecuteQueryRow(sql);
+            // string sql = @"INSERT INTO ToturialAppSchema.Computer (
+            // Motherboard,
+            //  CPUCores, 
+            //  HasWifi, 
+            //  HasLTE, 
+            //  ReleaseDate, 
+            //  Price, 
+            //  VideoCard
+            //  ) VALUES ('" + myComputer.Motherboard 
+            // + "', " + myComputer.CPUCores 
+            // + ", " + (myComputer.HasWifi ? 1 : 0) 
+            // + ", " + (myComputer.HasLTE ? 1 : 0)
+            // + ", '" + myComputer.ReleaseDate.ToString("yyyy-MM-dd")
+            // + "', " + myComputer.Price.ToString(System.Globalization.CultureInfo.InvariantCulture) 
+            // + ", '" + myComputer.VideoCard + "')";
+            // int result = dapper.ExecuteQueryRow(sql);
 
-            // Console.WriteLine($"Inserted {result} row(s) into the database.");
+            // // Console.WriteLine($"Inserted {result} row(s) into the database.");
 
-            string sqlSelect = @"SELECT  
-            Motherboard,
-             CPUCores, 
-             HasWifi, 
-             HasLTE, 
-             ReleaseDate, 
-             Price, 
-             VideoCard FROM ToturialAppSchema.Computer
-             WHERE VideoCard LIKE '%NVIDIA%'AND CPUCores > 12 AND Price > 2500
-             ";
-            IEnumerable<Computer> computers = dapper.GetData<Computer>(sqlSelect);
-            foreach(Computer singleComputer in computers)
-            {
-                Console.WriteLine($"Motherboard: {singleComputer.Motherboard}, CPU Cores: {singleComputer.CPUCores}, Has Wifi: {singleComputer.HasWifi}, Has LTE: {singleComputer.HasLTE}, Release Date: {singleComputer.ReleaseDate}, Price: {singleComputer.Price}, Video Card: {singleComputer.VideoCard}");
-            }
+            // string sqlSelect = @"SELECT  
+            // Motherboard,
+            //  CPUCores, 
+            //  HasWifi, 
+            //  HasLTE, 
+            //  ReleaseDate, 
+            //  Price, 
+            //  VideoCard FROM ToturialAppSchema.Computer
+            //  WHERE VideoCard LIKE '%NVIDIA%'AND CPUCores > 12 AND Price > 2500
+            //  ";
+            // IEnumerable<Computer> computers = dapper.GetData<Computer>(sqlSelect);
+            // foreach(Computer singleComputer in computers)
+            // {
+            //     Console.WriteLine($"Motherboard: {singleComputer.Motherboard}, CPU Cores: {singleComputer.CPUCores}, Has Wifi: {singleComputer.HasWifi}, Has LTE: {singleComputer.HasLTE}, Release Date: {singleComputer.ReleaseDate}, Price: {singleComputer.Price}, Video Card: {singleComputer.VideoCard}");
+            // }
 
             // Console.WriteLine(myComputer.Motherboard);
             // Console.WriteLine(myComputer.CPUCores);
@@ -89,6 +91,40 @@ namespace HelloWorld
 
             // IEnumerable<string> myGroceryList2 = new List<string> { "Milk", "Eggs" }; 
       
+
+
+          string computersJson = File.ReadAllText("Computers.json");
+
+        //   JsonSerializerOptions options = new JsonSerializerOptions
+        //   {
+        //     PropertyNameCaseInsensitive = true
+        //   };
+           
+        //   IEnumerable<Computer> computersFromJson = JsonSerializer.Deserialize<IEnumerable<Computer>>(computersJson,options);
+          IEnumerable<Computer> computersFromJson = JsonConvert.DeserializeObject<IEnumerable<Computer>>(computersJson);
+
+          if(computersFromJson != null)
+          {
+            foreach(Computer singleComputer in computersFromJson)
+            {
+                // Console.WriteLine($"Motherboard: {singleComputer.Motherboard}, CPU Cores: {singleComputer.CPUCores}, Has Wifi: {singleComputer.HasWifi}, Has LTE: {singleComputer.HasLTE}, Release Date: {singleComputer.ReleaseDate}, Price: {singleComputer.Price}, Video Card: {singleComputer.VideoCard}");
+           string sql = @"INSERT INTO ToturialAppSchema.Computer (
+            Motherboard,
+             CPUCores, 
+             HasWifi, 
+             HasLTE, 
+             ReleaseDate, 
+             Price, 
+             VideoCard
+             ) VALUES (@Motherboard, @CPUCores, @HasWifi, @HasLTE, @ReleaseDate, @Price, @VideoCard)";
+            int result = dapper.ExecuteQueryRow(sql, singleComputer);
+            
+            }
+          }
+          else
+          {
+            Console.WriteLine("No computers found in the JSON file.");
+          }
 
         }
 
