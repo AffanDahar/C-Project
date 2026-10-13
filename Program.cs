@@ -93,7 +93,8 @@ namespace HelloWorld
       
 
 
-          string computersJson = File.ReadAllText("Computers.json");
+        //   string computersJson = File.ReadAllText("Computers.json");
+          string computersJson = File.ReadAllText("ComputersSnake.json");
 
         //   JsonSerializerOptions options = new JsonSerializerOptions
         //   {
@@ -105,21 +106,22 @@ namespace HelloWorld
 
           if(computersFromJson != null)
           {
-            foreach(Computer singleComputer in computersFromJson)
-            {
-                // Console.WriteLine($"Motherboard: {singleComputer.Motherboard}, CPU Cores: {singleComputer.CPUCores}, Has Wifi: {singleComputer.HasWifi}, Has LTE: {singleComputer.HasLTE}, Release Date: {singleComputer.ReleaseDate}, Price: {singleComputer.Price}, Video Card: {singleComputer.VideoCard}");
-           string sql = @"INSERT INTO ToturialAppSchema.Computer (
-            Motherboard,
-             CPUCores, 
-             HasWifi, 
-             HasLTE, 
-             ReleaseDate, 
-             Price, 
-             VideoCard
-             ) VALUES (@Motherboard, @CPUCores, @HasWifi, @HasLTE, @ReleaseDate, @Price, @VideoCard)";
-            int result = dapper.ExecuteQueryRow(sql, singleComputer);
+        //     foreach(Computer singleComputer in computersFromJson)
+        //     {
+        //         // Console.WriteLine($"Motherboard: {singleComputer.Motherboard}, CPU Cores: {singleComputer.CPUCores}, Has Wifi: {singleComputer.HasWifi}, Has LTE: {singleComputer.HasLTE}, Release Date: {singleComputer.ReleaseDate}, Price: {singleComputer.Price}, Video Card: {singleComputer.VideoCard}");
+        //    string sql = @"INSERT INTO ToturialAppSchema.Computer (
+        //     Motherboard,
+        //      CPUCores, 
+        //      HasWifi, 
+        //      HasLTE, 
+        //      ReleaseDate, 
+        //      Price, 
+        //      VideoCard
+        //      ) VALUES (@Motherboard, @CPUCores, @HasWifi, @HasLTE, @ReleaseDate, @Price, @VideoCard)";
+        //     int result = dapper.ExecuteQueryRow(sql, singleComputer);
             
-            }
+        //     }
+            Console.WriteLine("Total Count: " + computersFromJson.Count());
           }
           else
           {
